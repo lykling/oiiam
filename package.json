@@ -1,0 +1,65 @@
+{
+  "name": "oiiam",
+  "version": "0.0.1",
+  "description": "Identity and Access Management, OpenID Provider",
+  "main": "index.js",
+  "scripts": {
+    "build:agent": "babel --out-dir build/agent agent",
+    "build:lib": "babel --out-dir build/lib lib",
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lykling/oiiam.git"
+  },
+  "keywords": [
+    "iam",
+    "openid"
+  ],
+  "author": "Pride Leong <lykling.lyk@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lykling/oiiam/issues"
+  },
+  "homepage": "https://github.com/lykling/oiiam#readme",
+  "dependencies": {
+    "@material-ui/core": "^3.9.3",
+    "@material-ui/icons": "^3.0.2",
+    "axios": "^0.18.0",
+    "bcrypt": "^3.0.6",
+    "core-js": "^3.0.1",
+    "koa": "^2.7.0",
+    "koa-bodyparser": "^4.2.1",
+    "koa-router": "^7.4.0",
+    "koa-send": "^5.0.0",
+    "koa-session": "^5.10.1",
+    "koa-static": "^5.0.0",
+    "lodash": "^4.17.11",
+    "pg": "^7.10.0",
+    "prop-types": "^15.7.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "uuid": "^3.3.2",
+    "yargs": "^13.0.0-candidate.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.3",
+    "@babel/core": "^7.4.3",
+    "@babel/plugin-proposal-class-properties": "^7.4.0",
+    "@babel/preset-env": "^7.4.3",
+    "@babel/preset-react": "^7.0.0",
+    "@ecomfe/eslint-config": "^2.1.0",
+    "babel-eslint": "^10.0.1",
+    "babel-loader": "^8.0.5",
+    "css-loader": "^2.1.1",
+    "eslint": "^5.16.0",
+    "eslint-plugin-babel": "^5.3.0",
+    "eslint-plugin-react": "^7.12.4",
+    "html-webpack-plugin": "^3.2.0",
+    "style-loader": "^0.23.1",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.2",
+    "webpack": "^4.30.0",
+    "webpack-cli": "^3.3.0"
+  }
+}

@@ -1,0 +1,7 @@
+{
+    "extends": [
+        "@ecomfe/eslint-config",
+        "eslint:recommended",
+        "plugin:react/recommended"
+    ]
+}
