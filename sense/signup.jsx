@@ -20,6 +20,8 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import axios from 'axios';
 import * as hooks from './hooks';
 import crypto from 'crypto';
+import request from './request';
+import _ from 'lodash';
 
 const styles = theme => ({
     main: {
@@ -53,25 +55,11 @@ const styles = theme => ({
     },
 });
 
-async function signup(data) {
-    const response = await axios.request({
-        url: '/api/signup',
-        method: 'POST',
-        responseType: 'json',
-        xsrfCookieName: 'oiiam:signuptoken',
-        xsrfHeaderName: 'x-xsrf-signuptoken',
-        headers: {},
-        data,
-        withCredentials: true,
-    });
-    return response.data;
-}
-
 function SignUp(props) {
     const {classes} = props;
 
     const [fieldsState, handleInput] = hooks.useFormFieldChange();
-    const [apiState, api] = hooks.useApi(signup);
+    const [apiState, api] = hooks.useApi(_.partial(request, '/api/signup'));
 
     async function submit(evt) {
         evt.preventDefault();
@@ -99,7 +87,13 @@ function SignUp(props) {
                     <form className={classes.form} onSubmit={submit}>
                         <FormControl margin="normal" required fullWidth>
                             <InputLabel htmlFor="email">Email Address</InputLabel>
-                            <Input id="email" name="email" autoComplete="email" autoFocus onChange={handleInput} />
+                            <Input
+                                id="email"
+                                name="email"
+                                autoComplete="email"
+                                autoFocus
+                                onChange={handleInput}
+                            />
                         </FormControl>
                         <FormControl
                             margin="normal"

@@ -13,7 +13,7 @@ const router = new Router();
 
 async function addSignUpToken(ctx, next) {
     // Add signup random token to session, verity it in post request
-    ctx.session.signup = {
+    ctx.session.xsrf = {
         token: uuid(),
         timestamp: new Date(),
     };
@@ -22,14 +22,14 @@ async function addSignUpToken(ctx, next) {
 
 async function addSignUpTokenCookie(ctx, next) {
     ctx.cookies.set(
-        'oiiam:signuptoken',
-        ctx.session.signup.token,
+        'oiiam:xsrftoken',
+        ctx.session.xsrf.token,
         {
             domain: 'iooy.cc',
             path: '/',
             maxAge: 30 * 60 * 1000,
             httpOnly: false,
-            sameSite: 'lax',
+            sameSite: 'strict',
             overwrite: false,
         }
     );
@@ -40,6 +40,10 @@ router.get('/signup', addSignUpToken);
 router.get('/signup.html', addSignUpToken);
 router.get('/signup', addSignUpTokenCookie);
 router.get('/signup.html', addSignUpTokenCookie);
+router.get('/signin', addSignUpToken);
+router.get('/signin.html', addSignUpToken);
+router.get('/signin', addSignUpTokenCookie);
+router.get('/signin.html', addSignUpTokenCookie);
 
 router.get('/*', serve(path.join(__dirname, '../..', 'sense'), {
     extensions: ['html'],

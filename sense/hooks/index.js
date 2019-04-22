@@ -66,7 +66,21 @@ export function useFormFieldChange() {
     };
     const [state, dispatch] = React.useReducer(reducer, {});
     const handler = evt => {
-        dispatch({type: 'INPUT', name: evt.target.name, value: evt.target.value});
+        const type = evt.target.type;
+        const action = {
+            type: 'INPUT',
+            name: evt.target.name,
+        };
+        switch (type) {
+            case 'checkbox': {
+                action.value = evt.target.checked;
+                break;
+            }
+            default: {
+                action.value = evt.target.value;
+            }
+        }
+        dispatch(action);
     };
     return [state, handler];
 }

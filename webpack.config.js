@@ -11,6 +11,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
     entry: {
         signup: './sense/signup.jsx',
+        signin: './sense/signin.jsx',
         ui: ['@material-ui/core', '@material-ui/icons'],
         react: ['react']
     },
@@ -39,6 +40,11 @@ module.exports = {
             title: 'SignUp',
             filename: 'signup.html',
             chunks: ['signup', 'ui', 'react']
+        }),
+        new HtmlWebpackPlugin({
+            title: 'SignIn',
+            filename: 'signin.html',
+            chunks: ['signin', 'ui', 'react']
         })
     ]
 };

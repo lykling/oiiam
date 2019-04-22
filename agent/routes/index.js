@@ -5,7 +5,6 @@
  * @author Pride Leong<lykling.lyk@gmail.com>
  */
 
-import session from 'koa-session';
 import Router from 'koa-router';
 
 import apiRouter from './api';
