@@ -53,7 +53,7 @@ export function useApi(func) {
     return [state, handler];
 }
 
-export function useFormFieldChange() {
+export function useFormFieldChange(initial) {
     const reducer = (state, action) => {
         switch (action.type) {
             case 'INPUT': {
@@ -64,7 +64,7 @@ export function useFormFieldChange() {
             }
         }
     };
-    const [state, dispatch] = React.useReducer(reducer, {});
+    const [state, dispatch] = React.useReducer(reducer, initial);
     const handler = evt => {
         const type = evt.target.type;
         const action = {

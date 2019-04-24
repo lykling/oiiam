@@ -8,13 +8,14 @@
 import axios from 'axios';
 import uuid from 'uuid/v4';
 
-export default async function request(path, data) {
+export default async function request(path, params, data) {
     const response = await axios.request({
         url: path,
         method: 'POST',
         responseType: 'json',
         xsrfCookieName: 'oiiam:xsrftoken',
         xsrfHeaderName: 'x-xsrf-token',
+        params,
         headers: {
             time: +(new Date()),
             requestid: uuid(),

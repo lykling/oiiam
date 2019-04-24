@@ -17,7 +17,6 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
-import axios from 'axios';
 import * as hooks from './hooks';
 import crypto from 'crypto';
 import request from './request';
@@ -59,7 +58,7 @@ function SignUp(props) {
     const {classes} = props;
 
     const [fieldsState, handleInput] = hooks.useFormFieldChange();
-    const [apiState, api] = hooks.useApi(_.partial(request, '/api/signup'));
+    const [apiState, api] = hooks.useApi(_.partial(request, '/api/signup', {}));
 
     async function submit(evt) {
         evt.preventDefault();

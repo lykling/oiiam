@@ -7,6 +7,8 @@
 import Router from 'koa-router';
 import bcrypt from 'bcrypt';
 import bodyparser from 'koa-bodyparser';
+import * as hydra from '../../lib/hydra';
+import _ from 'lodash';
 
 const router = new Router();
 
@@ -29,11 +31,30 @@ router.post('/*', async (ctx, next) => {
 });
 
 router.post('/signin', async (ctx, next) => {
-    ctx.body = JSON.stringify({
-        token: ctx.session.xsrf.token,
-        referer: ctx.get('referer'),
-        code: 0,
-    });
+    // Check if credentials valid
+
+    // Authenticated, communicate to hydra
+    const referer = new URL(ctx.get('referer'));
+    const challenge = referer.searchParams.get('login_challenge');
+    try {
+        const response = await hydra.acceptLoginRequest({challenge}, {
+            subject: ctx.request.body.email,
+            remember: ctx.request.body.remember,
+            remember_for: 60,
+        });
+        ctx.body = JSON.stringify({
+            code: 0,
+            message: 'success',
+            data: response.data,
+        });
+    }
+    catch (err) {
+        ctx.body = JSON.stringify({
+            code: 1,
+            message: 'login error',
+            error: null,
+        });
+    }
 });
 
 router.post('/signup', async (ctx, next) => {
@@ -47,8 +68,15 @@ router.post('/signup', async (ctx, next) => {
         code: 0,
     });
 });
-router.post('/signin', async (ctx, next) => {
-    await next();
+
+router.post('/hydra/:method', async (ctx, next) => {
+    try {
+        const response = await _.get(hydra, ctx.params.method, _.noop)(ctx.query, ctx.request.body);
+        ctx.body = response.data;
+    }
+    catch (err) {
+        ctx.body = err.response;
+    }
 });
 
 export default router;
