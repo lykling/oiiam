@@ -25,5 +25,5 @@ export default async function request(path, params, data) {
         },
         withCredentials: true,
     });
-    return response;
+    return response.data;
 }

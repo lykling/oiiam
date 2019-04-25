@@ -12,6 +12,7 @@ module.exports = {
     entry: {
         signup: './sense/signup.jsx',
         signin: './sense/signin.jsx',
+        consent: './sense/consent.jsx',
         ui: ['@material-ui/core', '@material-ui/icons'],
         react: ['react']
     },
@@ -19,6 +20,8 @@ module.exports = {
         path: path.resolve(__dirname, 'build/sense'),
         filename: '[name].[hash].js'
     },
+    mode: 'production',
+    devtool: 'eval-source-map',
     module: {
         rules: [
             {
@@ -45,6 +48,11 @@ module.exports = {
             title: 'SignIn',
             filename: 'signin.html',
             chunks: ['signin', 'ui', 'react']
+        }),
+        new HtmlWebpackPlugin({
+            title: 'Consent',
+            filename: 'consent.html',
+            chunks: ['consent', 'ui', 'react']
         })
     ]
 };

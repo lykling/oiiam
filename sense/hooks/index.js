@@ -7,6 +7,29 @@
 
 import React from 'react';
 
+export function useAsyncLoad(func, scopes) {
+    const [state, setState] = React.useState({
+        data: null,
+        error: new Error('loading'),
+    });
+    React.useEffect(async () => {
+        try {
+            const data = await func();
+            setState({
+                data,
+                error: null,
+            });
+        }
+        catch (err) {
+            setState({
+                data: null,
+                error: err,
+            });
+        }
+    }, scopes);
+    return state;
+}
+
 export function useApi(func) {
     const reducer = (state, action) => {
         switch (action.type) {
@@ -40,10 +63,10 @@ export function useApi(func) {
         error: null,
     });
 
-    const handler = async opts => {
+    const handler = async (...args) => {
         dispatch({type: 'REQUEST'});
         try {
-            const response = await func(opts);
+            const response = await func(...args);
             dispatch({type: 'REQUEST_SUCC', response: response});
         }
         catch (error) {
@@ -67,17 +90,28 @@ export function useFormFieldChange(initial) {
     const [state, dispatch] = React.useReducer(reducer, initial);
     const handler = evt => {
         const type = evt.target.type;
+        const name = evt.target.name;
         const action = {
             type: 'INPUT',
-            name: evt.target.name,
+            name,
         };
         switch (type) {
             case 'checkbox': {
-                action.value = evt.target.checked;
+                if (evt.target.value) {
+                    // Treat checkbox as group if `value` defined
+                    action.value = {
+                        ...state[name],
+                        [evt.target.value]: evt.target.checked,
+                    };
+                }
+                else {
+                    action.value = evt.target.checked;
+                }
                 break;
             }
             default: {
                 action.value = evt.target.value;
+                break;
             }
         }
         dispatch(action);
