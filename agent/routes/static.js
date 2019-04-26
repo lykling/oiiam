@@ -39,7 +39,7 @@ async function getLoginRequest(ctx, next) {
         const response = await hydra.getLoginRequest({challenge});
         if (response.data.skip) {
             const accept = await hydra.acceptLoginRequest({challenge}, {
-                subject: response.subject,
+                subject: response.data.subject,
             });
             ctx.redirect(accept.data.redirect_to);
             return;
@@ -48,9 +48,35 @@ async function getLoginRequest(ctx, next) {
         return;
     }
     catch (err) {
+        ctx.status = 500;
         ctx.body = JSON.stringify({
             code: 1,
             message: 'get login request error',
+            error: {},
+        });
+    }
+}
+
+async function getConsentRequest(ctx, next) {
+    const challenge = ctx.query.consent_challenge;
+    try {
+        const response = await hydra.getConsentRequest({challenge});
+        if (response.data.skip) {
+            const accept = await hydra.acceptConsentRequest({challenge}, {
+                grant_scope: response.data.requested_scope,
+                grant_access_token_audience: response.data.requested_access_token_audience,
+                session: {},
+            });
+            ctx.redirect(accept.data.redirect_to);
+            return;
+        }
+        await next();
+    }
+    catch (err) {
+        ctx.status = 500;
+        ctx.body = JSON.stringify({
+            code: 1,
+            message: 'get consent request error',
             error: {},
         });
     }
@@ -65,7 +91,9 @@ router.get('/signin.html', addXsrfToken);
 router.get('/signin.html', getLoginRequest);
 
 router.get('/consent', addXsrfToken);
+router.get('/consent', getConsentRequest);
 router.get('/consent.html', addXsrfToken);
+router.get('/consent.html', getConsentRequest);
 
 router.get('/*', serve(path.join(__dirname, '../..', 'sense'), {
     extensions: ['html'],

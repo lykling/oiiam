@@ -49,6 +49,7 @@ router.post('/signin', async (ctx, next) => {
         });
     }
     catch (err) {
+        ctx.body = 500;
         ctx.body = JSON.stringify({
             code: 1,
             message: 'login error',
@@ -75,6 +76,7 @@ router.post('/hydra/:method', async (ctx, next) => {
         ctx.body = response.data;
     }
     catch (err) {
+        ctx.status = 500;
         ctx.body = err.response;
     }
 });

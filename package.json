@@ -6,6 +6,8 @@
   "scripts": {
     "build:agent": "babel --out-dir build/agent agent",
     "build:lib": "babel --out-dir build/lib lib",
+    "build:backend": "npm run build:agent && npm run build:lib",
+    "start:buildagent": "node build/agent",
     "test": "mocha"
   },
   "repository": {
@@ -60,6 +62,8 @@
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
     "webpack": "^4.30.0",
-    "webpack-cli": "^3.3.0"
+    "webpack-bundle-analyzer": "^3.3.2",
+    "webpack-cli": "^3.3.0",
+    "webpack-dev-server": "^3.3.1"
   }
 }

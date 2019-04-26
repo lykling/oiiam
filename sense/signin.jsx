@@ -59,7 +59,7 @@ const styles = theme => ({
 function SignIn(props) {
     const {classes} = props;
     const [fieldsState, handleInput] = hooks.useFormFieldChange();
-    const [, api] = hooks.useApi(_.partial(request, '/api/signin', {}));
+    const [apiState, api] = hooks.useApi(_.partial(request, '/api/signin', {}));
 
     async function submit(evt) {
         evt.preventDefault();
@@ -68,7 +68,8 @@ function SignIn(props) {
             password: crypto.createHash('sha512').update(fieldsState.password).digest('hex'),
             remember: fieldsState.remember,
         };
-        await api(params);
+        const result = await api(params);
+        window.location.href = result.data.redirect_to;
     }
     return (
         <main className={classes.main}>
@@ -115,6 +116,12 @@ function SignIn(props) {
                         SignIn
                     </Button>
                 </form>
+                {apiState.error == null
+                ? ''
+                : (
+                    <em>{apiState.error.stack}</em>
+                )
+                }
             </Paper>
         </main>
     );

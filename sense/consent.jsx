@@ -7,21 +7,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
-import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import withStyles from '@material-ui/core/styles/withStyles';
 import request from './request';
 import * as hooks from './hooks';
+import _ from 'lodash';
 
 const styles = theme => ({
     main: {
@@ -70,43 +65,47 @@ function Consent(props) {
         []
     );
     const [fieldsState, handleInput] = hooks.useFormFieldChange({});
-    const [acception, accept] = hooks.useApi(
-        _.partial(request, '/api/hydra/acceptConsentRequest', {challenge})
-    );
-    const [rejection, reject] = hooks.useApi(
+
+    const [action, accept, reject] = hooks.useRaceAsync(
+        _.partial(request, '/api/hydra/acceptConsentRequest', {challenge}),
         _.partial(request, '/api/hydra/rejectConsentRequest', {challenge})
-    );
+    )
 
     async function deny() {
         const resp = await reject({
             error: 'access_denied',
             error_description: 'The resource owner denied the request',
         });
+        window.location.href = resp.redirect_to;
     }
     async function allow() {
         const resp = await accept({
             grant_scope: _.keys(_.pickBy(fieldsState.scopes)),
             grant_access_token_audience: req.requested_access_token_audience,
             session: {},
+            remember: Boolean(fieldsState.remember),
+            remember_for: 3600,
         });
+        window.location.href = resp.redirect_to;
     }
 
     function renderScopes(scopes) {
         return (
             <div className={classes.scopes}>
-            {scopes.map(x => (
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            name="scopes"
-                            value={x}
-                            onChange={handleInput}
-                            color="primary"
-                        />
-                    }
-                    label={x}
-                />
-            ))}
+                {scopes.map(x => (
+                    <FormControlLabel
+                        key={`scope-${x}`}
+                        control={
+                            <Checkbox
+                                name="scopes"
+                                value={x}
+                                onChange={handleInput}
+                                color="primary"
+                            />
+                        }
+                        label={x}
+                    />
+                ))}
             </div>
         );
     }
@@ -124,20 +123,17 @@ function Consent(props) {
         );
     }
 
-    function renderForm(req) {
-        if (req == null) {
-            return 'loading';
-        }
-        if (req.error != null) {
+    function renderContent(req, error) {
+        if (error != null) {
             return (
-                <em>{req.error}</em>
+                <em>{error.stack}</em>
             );
         }
         return (
             <Paper className={classes.paper}>
-                {renderClient(req.data.client)}
+                {renderClient(req.client)}
                 <form className={classes.form}>
-                    {renderScopes(req.data.requested_scope)}
+                    {renderScopes(req.requested_scope)}
                     <Divider variant="middle" />
                     <FormControlLabel
                         control={<Checkbox name="remember" color="primary" onChange={handleInput} />}
@@ -160,12 +156,19 @@ function Consent(props) {
                         </Button>
                     </div>
                 </form>
+                {action.error == null
+                ? ''
+                : (
+                    <em>action.error.stack</em>
+                )
+                }
             </Paper>
         );
     }
+
     return (
         <main className={classes.main}>
-            {renderForm(consentRequest)}
+            {renderContent(req, error)}
         </main>
     );
 }

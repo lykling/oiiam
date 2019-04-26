@@ -19,15 +19,50 @@ export function useAsyncLoad(func, scopes) {
                 data,
                 error: null,
             });
+            return data;
         }
         catch (err) {
             setState({
                 data: null,
                 error: err,
             });
+            return err;
         }
     }, scopes);
     return state;
+}
+
+export function useRaceAsync(...funcs) {
+    const [state, setState] = React.useState({
+        phase: 'init',
+        result: null,
+        error: null,
+    });
+    const handlers = funcs.map(func => async (...args) => {
+        setState({
+            phase: 'submitting',
+            result: null,
+            error: null,
+        })
+        try {
+            const result = await func(...args);
+            setState({
+                phase: 'complete',
+                result,
+                error: null,
+            });
+            return result;
+        }
+        catch (error) {
+            setState({
+                phase: 'failed',
+                result: null,
+                error,
+            });
+            return error;
+        }
+    });
+    return [state, ...handlers];
 }
 
 export function useApi(func) {
@@ -68,9 +103,11 @@ export function useApi(func) {
         try {
             const response = await func(...args);
             dispatch({type: 'REQUEST_SUCC', response: response});
+            return response;
         }
         catch (error) {
             dispatch({type: 'REQUEST_FAIL', error: error});
+            return error;
         }
     };
     return [state, handler];
