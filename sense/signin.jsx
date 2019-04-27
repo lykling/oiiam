@@ -65,7 +65,7 @@ function SignIn(props) {
         evt.preventDefault();
         const params = {
             email: fieldsState.email,
-            password: crypto.createHash('sha512').update(fieldsState.password).digest('hex'),
+            password: crypto.createHash('md5').update(fieldsState.password).digest('hex'),
             remember: fieldsState.remember,
         };
         const result = await api(params);

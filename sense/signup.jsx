@@ -57,8 +57,8 @@ const styles = theme => ({
 function SignUp(props) {
     const {classes} = props;
 
-    const [fieldsState, handleInput] = hooks.useFormFieldChange();
-    const [apiState, api] = hooks.useApi(_.partial(request, '/api/signup', {}));
+    const [fieldsState, handleInput] = hooks.useFormFieldChange({});
+    const [apiState, api] = hooks.useApi(_.partial(request, '/api/signup', {}), {});
 
     async function submit(evt) {
         evt.preventDefault();
@@ -67,7 +67,7 @@ function SignUp(props) {
         }
         const params = {
             email: fieldsState.email,
-            password: crypto.createHash('sha512').update(fieldsState.password).digest('hex'),
+            password: crypto.createHash('md5').update(fieldsState.password).digest('hex'),
         }
         await api(params);
     }
